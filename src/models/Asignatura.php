@@ -1,8 +1,8 @@
 <?php
 class Asignatura
 {
-    // trimestre_id fijo a 1 de momento
-    // el selector real de trimestre en la UI lo añadimos más adelante.
+    // trimestre_id fijo a 1 de momento (el que creamos por SQL); el selector
+    // real de trimestre en la UI lo añadimos más adelante.
     public static function obtenerTodas(int $trimestreId = 1): array
     {
         $pdo = Gestor::getConexion();
@@ -21,7 +21,7 @@ class Asignatura
         $stmt->execute();
     }
 
-    public static function obtenerUna(int $id): array|false
+    public static function obtenerUna(int $id)
     {
         $pdo = Gestor::getConexion();
         $stmt = $pdo->prepare("SELECT id, nombre FROM asignaturas WHERE id = :id");

@@ -1,3 +1,10 @@
 <?php
 require __DIR__ . '/autoload.php';
-require __DIR__ . '/controllers/AsignaturaController.php';
+
+$controlador = $_GET['controlador'] ?? 'asignatura';
+
+if ($controlador === 'categoria') {
+    require __DIR__ . '/controllers/CategoriaController.php';
+} else {
+    require __DIR__ . '/controllers/AsignaturaController.php';
+}

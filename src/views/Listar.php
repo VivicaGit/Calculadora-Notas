@@ -10,7 +10,7 @@
     <ul>
         <?php foreach ($asignaturas as $asig): ?>
             <li>
-                <?= htmlspecialchars($asig['nombre']) ?>
+                <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>"><?= htmlspecialchars($asig['nombre']) ?></a>
                 <a href="index.php?accion=editar&id=<?= $asig['id'] ?>">editar</a>
                 <a href="index.php?accion=borrar&id=<?= $asig['id'] ?>"
                    onclick="return confirm('¿Borrar esta asignatura y todas sus notas?')">

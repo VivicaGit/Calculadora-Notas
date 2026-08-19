@@ -1,5 +1,5 @@
 <?php
-// $_GET['accion'] nos dice qué queremos hacer. Si no viene nada, listamos.
+
 $accion = $_GET['accion'] ?? 'listar';
 
 if ($accion === 'crear' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -7,9 +7,17 @@ if ($accion === 'crear' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nombre !== '') {
         Asignatura::crear($nombre);
     }
-    // Tras un POST redirigimos con GET, así si recargamos la página
-    // no se reenvía el formulario duplicado.
+
     header('Location: index.php');
+    exit;
+}
+
+if ($accion === 'detalle' && isset($_GET['id'])) {
+    $asignaturaId = (int) $_GET['id'];
+    $asignatura = Asignatura::obtenerUna($asignaturaId);
+    $categorias = Categoria::obtenerPorAsignatura($asignaturaId);
+    $sumaPesos = Categoria::sumaPesos($asignaturaId);
+    require __DIR__ . '/../views/detalle.php';
     exit;
 }
 
@@ -24,8 +32,7 @@ if ($accion === 'editar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if ($accion === 'editar' && isset($_GET['id'])) {
-    // Aquí solo mostramos el formulario ya relleno con el nombre actual;
-    // el guardado de verdad pasa por el bloque POST de arriba.
+
     $asignatura = Asignatura::obtenerUna((int) $_GET['id']);
     require __DIR__ . '/../views/editar.php';
     exit;
@@ -37,6 +44,6 @@ if ($accion === 'borrar' && isset($_GET['id'])) {
     exit;
 }
 
-// Acción por defecto: listar
+// por defecto: listar
 $asignaturas = Asignatura::obtenerTodas();
 require __DIR__ . '/../views/listar.php';

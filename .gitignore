@@ -1,0 +1,6 @@
+# Docker
+.DS_Store
+Thumbs.db
+# contraseñas
+.env
+notas-proyecto.md
