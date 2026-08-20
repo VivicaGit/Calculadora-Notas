@@ -58,4 +58,19 @@ class Categoria
         $stmt->execute();
         return (float) $stmt->fetch()['total'];
     }
+
+    // Calcula la media aritmética de una lista de notas
+    public static function calcularMedia(array $notas)
+    {
+        if (empty($notas)) {
+            return null;
+        }
+
+        $suma = 0;
+        foreach ($notas as $n) {
+            $suma += (float) $n['valor'];
+        }
+
+        return $suma / count($notas);
+    }
 }

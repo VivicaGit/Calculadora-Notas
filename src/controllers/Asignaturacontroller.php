@@ -16,6 +16,12 @@ if ($accion === 'detalle' && isset($_GET['id'])) {
     $asignaturaId = (int) $_GET['id'];
     $asignatura = Asignatura::obtenerUna($asignaturaId);
     $categorias = Categoria::obtenerPorAsignatura($asignaturaId);
+    foreach ($categorias as &$cat) {
+        $cat['notas'] = Nota::obtenerPorCategoria((int) $cat['id']);
+        $cat['media'] = Categoria::calcularMedia($cat['notas']);
+    }
+    unset($cat);
+    $mediaAsignatura = Asignatura::calcularMedia($categorias);
     $sumaPesos = Categoria::sumaPesos($asignaturaId);
     require __DIR__ . '/../views/detalle.php';
     exit;
@@ -46,4 +52,14 @@ if ($accion === 'borrar' && isset($_GET['id'])) {
 
 // por defecto: listar
 $asignaturas = Asignatura::obtenerTodas();
+foreach ($asignaturas as &$asig) {
+    $cats = Categoria::obtenerPorAsignatura((int) $asig['id']);
+    foreach ($cats as &$c) {
+        $notas = Nota::obtenerPorCategoria((int) $c['id']);
+        $c['media'] = Categoria::calcularMedia($notas);
+    }
+    unset($c);
+    $asig['media'] = Asignatura::calcularMedia($cats);
+}
+unset($asig);
 require __DIR__ . '/../views/listar.php';

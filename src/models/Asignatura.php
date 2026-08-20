@@ -46,4 +46,24 @@ class Asignatura
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
+
+    // Calcula la media ponderada de la asignatura según las categorías evaluadas
+    public static function calcularMedia(array $categorias)
+    {
+        $sumaPonderada = 0;
+        $pesoTotalEvaluado = 0;
+
+        foreach ($categorias as $cat) {
+            if (isset($cat['media']) && $cat['media'] !== null) {
+                $sumaPonderada += (float) $cat['media'] * (float) $cat['peso'];
+                $pesoTotalEvaluado += (float) $cat['peso'];
+            }
+        }
+
+        if ($pesoTotalEvaluado == 0) {
+            return null;
+        }
+
+        return $sumaPonderada / $pesoTotalEvaluado;
+    }
 }
