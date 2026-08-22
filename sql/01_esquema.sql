@@ -34,10 +34,10 @@ CREATE TABLE trimestres (
 
 CREATE TABLE asignaturas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    trimestre_id INT NOT NULL,
+    curso_id INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (trimestre_id) REFERENCES trimestres(id) ON DELETE CASCADE
+    FOREIGN KEY (curso_id) REFERENCES cursos(id) ON DELETE CASCADE
 );
 
 CREATE TABLE categorias (
@@ -53,9 +53,11 @@ CREATE TABLE categorias (
 CREATE TABLE notas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     categoria_id INT NOT NULL,
+    trimestre_id INT NOT NULL,
     valor DECIMAL(4,2) NOT NULL,
     fecha DATE DEFAULT NULL,
-    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE,
+    FOREIGN KEY (trimestre_id) REFERENCES trimestres(id) ON DELETE CASCADE
 );
 
 -- Plantillas de pesos reutilizables entre asignaturas

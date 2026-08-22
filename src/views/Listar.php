@@ -7,66 +7,185 @@ function claseColorNota($nota) {
     if ($nota >= 4) return 'nota-suficiente';
     return 'nota-suspenso';
 }
+
+function claseResumenCard($nota) {
+    if ($nota === null) return 'resumen-sin-nota';
+    if ($nota >= 9) return 'resumen-sobresaliente';
+    if ($nota >= 7) return 'resumen-notable';
+    if ($nota >= 5) return 'resumen-aprobado';
+    if ($nota >= 4) return 'resumen-suficiente';
+    return 'resumen-suspenso';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis asignaturas</title>
+    <title>Calculadora de Notas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-    <div class="container py-5" style="max-width: 680px;">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h1 class="h2 mb-0">Mis asignaturas</h1>
-        </div>
+<div class="contenedor-app">
+
+    <header class="cabecera-app">
+        <span class="cabecera-icono" aria-hidden="true">📊</span>
+        <h1 class="cabecera-titulo">Calculadora de Notas</h1>
+    </header>
+
+    <main>
+        <!-- Selector de titulación / curso / trimestre -->
+        <nav class="card selector-nav mb-4" aria-label="Selección de trimestre">
+            <?php if (!empty($titulaciones)): ?>
+            <div class="selector-fila">
+                <span class="selector-etiqueta" id="lbl-titulacion">Titulación</span>
+                <div class="d-flex flex-wrap gap-2" role="group" aria-labelledby="lbl-titulacion">
+                    <?php foreach ($titulaciones as $t): ?>
+                        <a href="index.php?accion=seleccionar&tipo=titulacion&id=<?= $t['id'] ?>"
+                           class="btn-selector <?= (int) $t['id'] === $titulacionId ? 'btn-selector--activo' : '' ?>"
+                           aria-current="<?= (int) $t['id'] === $titulacionId ? 'true' : 'false' ?>">
+                            <?= htmlspecialchars($t['nombre']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (!empty($cursos)): ?>
+            <div class="selector-fila">
+                <span class="selector-etiqueta" id="lbl-curso">Curso</span>
+                <div class="d-flex flex-wrap gap-2" role="group" aria-labelledby="lbl-curso">
+                    <?php foreach ($cursos as $c): ?>
+                        <a href="index.php?accion=seleccionar&tipo=curso&id=<?= $c['id'] ?>"
+                           class="btn-selector <?= (int) $c['id'] === $cursoId ? 'btn-selector--activo' : '' ?>"
+                           aria-current="<?= (int) $c['id'] === $cursoId ? 'true' : 'false' ?>">
+                            <?= htmlspecialchars($c['nombre']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if (!empty($trimestres)): ?>
+            <div class="selector-fila">
+                <span class="selector-etiqueta" id="lbl-trimestre">Trimestre</span>
+                <div class="d-flex flex-wrap gap-2" role="group" aria-labelledby="lbl-trimestre">
+                    <?php foreach ($trimestres as $t): ?>
+                        <a href="index.php?accion=seleccionar&tipo=trimestre&id=<?= $t['id'] ?>"
+                           class="btn-selector <?= (int) $t['id'] === $trimestreId ? 'btn-selector--activo' : '' ?>"
+                           aria-current="<?= (int) $t['id'] === $trimestreId ? 'true' : 'false' ?>">
+                            <?= htmlspecialchars($t['nombre']) ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </nav>
 
         <?php if (!empty($asignaturas)): ?>
-            <div class="mb-4">
+        <!-- Panel resumen del trimestre (estilo calculadora1.html) -->
+        <section class="panel-resumen mb-4" aria-label="Resumen del trimestre">
+            <h2 class="panel-resumen__titulo">📋 Resumen — <?= htmlspecialchars($trimestreNombre) ?></h2>
+            <div class="resumen-grid">
                 <?php foreach ($asignaturas as $asig): ?>
-                    <div class="list-group-item bg-white p-3 d-flex justify-content-between align-items-center mb-2">
-                        <div class="d-flex align-items-center gap-3">
-                            <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>" class="text-decoration-none text-dark fw-bold fs-5">
-                                <?= htmlspecialchars($asig['nombre']) ?>
-                            </a>
-                            <?php if ($asig['media'] !== null): ?>
-                                <span class="badge bg-light border fs-6 <?= claseColorNota($asig['media']) ?>">
-                                    <?= number_format($asig['media'], 2) ?>
-                                </span>
-                            <?php else: ?>
-                                <span class="badge bg-light border text-muted fs-6">--</span>
-                            <?php endif; ?>
-                        </div>
-                        <div class="btn-group btn-group-sm">
-                            <a href="index.php?accion=editar&id=<?= $asig['id'] ?>" class="btn btn-outline-secondary">Editar</a>
-                            <a href="index.php?accion=borrar&id=<?= $asig['id'] ?>"
-                               class="btn btn-outline-danger"
-                               onclick="return confirm('¿Borrar esta asignatura y todas sus notas?')">
-                               Borrar
-                            </a>
-                        </div>
+                    <div class="resumen-card <?= claseResumenCard($asig['media']) ?>">
+                        <span class="resumen-card__nombre"><?= htmlspecialchars($asig['nombre']) ?></span>
+                        <span class="resumen-card__nota">
+                            <?= $asig['media'] !== null ? number_format($asig['media'], 2) : '--' ?>
+                        </span>
                     </div>
                 <?php endforeach; ?>
             </div>
-        <?php else: ?>
-            <div class="alert alert-info mb-4">No hay asignaturas registradas todavía.</div>
+            <div class="resumen-media-general">
+                <span>Media del trimestre</span>
+                <?php if ($mediaGeneral !== null): ?>
+                    <span class="nota-grande"><?= number_format($mediaGeneral, 2) ?></span>
+                <?php else: ?>
+                    <span class="nota-grande">--</span>
+                <?php endif; ?>
+            </div>
+        </section>
         <?php endif; ?>
 
-        <div class="card">
-            <div class="card-body p-4">
-                <h2 class="h5 card-title mb-3">Añadir asignatura</h2>
-                <form action="index.php?accion=crear" method="POST" class="row g-2">
-                    <div class="col-8">
-                        <input type="text" name="nombre" class="form-control" placeholder="Nombre de la asignatura" required>
-                    </div>
-                    <div class="col-4 d-grid">
-                        <button type="submit" class="btn btn-primary">Añadir</button>
-                    </div>
-                </form>
+        <!-- Grid de asignaturas -->
+        <section aria-label="Asignaturas">
+            <div class="row g-3">
+                <?php foreach ($asignaturas as $asig): ?>
+                <div class="col-12 col-sm-6">
+                    <article class="card tarjeta-asignatura h-100">
+                        <div class="card-body d-flex flex-column p-4">
+                            <header class="card-cabecera">
+                                <div class="d-flex align-items-start justify-content-between gap-2">
+                                    <h2 class="h5 mb-0">
+                                        <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>"
+                                           class="text-decoration-none text-dark">
+                                            <?= htmlspecialchars($asig['nombre']) ?>
+                                        </a>
+                                    </h2>
+                                    <details class="flex-shrink-0">
+                                        <summary class="btn-editar-icono" title="Renombrar">✎</summary>
+                                        <form action="index.php?accion=editar" method="POST"
+                                              class="d-flex gap-1 mt-2">
+                                            <input type="hidden" name="id" value="<?= $asig['id'] ?>">
+                                            <input type="text" name="nombre"
+                                                   value="<?= htmlspecialchars($asig['nombre']) ?>"
+                                                   class="form-control form-control-sm" required>
+                                            <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                                        </form>
+                                    </details>
+                                </div>
+                            </header>
+
+                            <div class="nota-final-caja my-3">
+                                <span class="text-muted small fw-semibold">Nota final</span>
+                                <?php if ($asig['media'] !== null): ?>
+                                    <span class="nota-grande <?= claseColorNota($asig['media']) ?>">
+                                        <?= number_format($asig['media'], 2) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="nota-grande text-muted">--</span>
+                                <?php endif; ?>
+                            </div>
+
+                            <footer class="mt-auto d-flex gap-2">
+                                <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>"
+                                   class="btn btn-sm btn-primary flex-grow-1">Ver notas</a>
+                                <a href="index.php?accion=borrar&id=<?= $asig['id'] ?>"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('¿Borrar esta asignatura y todas sus notas?')">Borrar</a>
+                            </footer>
+                        </div>
+                    </article>
+                </div>
+                <?php endforeach; ?>
+
+                <!-- Tarjeta para añadir nueva asignatura -->
+                <div class="col-12 col-sm-6">
+                    <article class="card tarjeta-anadir h-100">
+                        <div class="card-body d-flex flex-column justify-content-center p-4">
+                            <h2 class="h6 text-muted mb-3">Nueva asignatura</h2>
+                            <form action="index.php?accion=crear" method="POST" class="d-flex flex-column gap-2">
+                                <input type="text" name="nombre" class="form-control"
+                                       placeholder="Nombre de la asignatura" required>
+                                <button type="submit" class="btn btn-primary">Añadir</button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <?php if (empty($asignaturas)): ?>
+            <div class="alert alert-info mt-2">
+                <?php if ($cursoId > 0): ?>
+                    No hay asignaturas en este curso todavía. ¡Añade la primera!
+                <?php else: ?>
+                    Ejecuta <code>02_datos_prueba.sql</code> para crear la estructura de titulaciones, cursos y trimestres.
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+        </section>
+    </main>
+</div>
 </body>
 </html>

@@ -10,11 +10,12 @@ $accion = $_GET['accion'] ?? '';
 
 if ($accion === 'crear' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoriaId = (int) ($_POST['categoria_id'] ?? 0);
-    $valor = (float) ($_POST['valor'] ?? -1);
+    $valor       = (float) ($_POST['valor'] ?? -1);
+    $trimestreId = (int) ($_POST['trimestre_id'] ?? $_SESSION['trimestre_id'] ?? 1);
 
     // Validamos que la nota esté dentro del rango 0 a 10
-    if ($categoriaId > 0 && $valor >= 0 && $valor <= 10) {
-        Nota::crear($categoriaId, $valor);
+    if ($categoriaId > 0 && $trimestreId > 0 && $valor >= 0 && $valor <= 10) {
+        Nota::crear($categoriaId, $valor, $trimestreId);
     }
     header("Location: index.php?accion=detalle&id=$asignaturaId");
     exit;

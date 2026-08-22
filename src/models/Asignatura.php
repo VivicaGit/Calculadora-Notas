@@ -1,22 +1,20 @@
 <?php
 class Asignatura
 {
-    // trimestre_id fijo a 1 de momento (el que creamos por SQL); el selector
-    // real de trimestre en la UI lo añadimos más adelante.
-    public static function obtenerTodas(int $trimestreId = 1): array
+    public static function obtenerTodas(int $cursoId = 1): array
     {
         $pdo = Gestor::getConexion();
-        $stmt = $pdo->prepare("SELECT id, nombre FROM asignaturas WHERE trimestre_id = :trimestre_id ORDER BY nombre");
-        $stmt->bindValue(':trimestre_id', $trimestreId, PDO::PARAM_INT);
+        $stmt = $pdo->prepare("SELECT id, nombre FROM asignaturas WHERE curso_id = :curso_id ORDER BY nombre");
+        $stmt->bindValue(':curso_id', $cursoId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
-    public static function crear(string $nombre, int $trimestreId = 1): void
+    public static function crear(string $nombre, int $cursoId = 1): void
     {
         $pdo = Gestor::getConexion();
-        $stmt = $pdo->prepare("INSERT INTO asignaturas (trimestre_id, nombre) VALUES (:trimestre_id, :nombre)");
-        $stmt->bindValue(':trimestre_id', $trimestreId, PDO::PARAM_INT);
+        $stmt = $pdo->prepare("INSERT INTO asignaturas (curso_id, nombre) VALUES (:curso_id, :nombre)");
+        $stmt->bindValue(':curso_id', $cursoId, PDO::PARAM_INT);
         $stmt->bindValue(':nombre', $nombre, PDO::PARAM_STR);
         $stmt->execute();
     }

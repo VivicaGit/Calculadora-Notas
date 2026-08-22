@@ -1,49 +1,274 @@
-/* Estilos inspirados en calculadora1.html manteniendo Bootstrap para layout y spacing */
-
+/* =============================================
+   Variables
+   ============================================= */
 :root {
-    --color-indigo-50: #eef2ff;
+    --color-indigo-50:  #eef2ff;
     --color-indigo-100: #e0e7ff;
     --color-indigo-200: #c7d2fe;
+    --color-indigo-500: #6366f1;
     --color-indigo-600: #4f46e5;
     --color-indigo-700: #4338ca;
-    --color-gray-50: #f9fafb;
+    --color-gray-50:  #f9fafb;
     --color-gray-100: #f3f4f6;
     --color-gray-200: #e5e7eb;
     --color-gray-600: #4b5563;
     --color-gray-700: #374151;
     --color-gray-800: #1f2937;
-    --radius-card: 14px;
+    --radius-card:  14px;
     --radius-input: 8px;
 }
 
+/* =============================================
+   Base
+   ============================================= */
 body {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0e7ff 100%);
+    background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
     min-height: 100vh;
     color: var(--color-gray-800);
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Tarjetas */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-gray-800);
+    font-weight: 700;
+}
+
+/* =============================================
+   Layout principal
+   ============================================= */
+.contenedor-app {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+}
+
+/* =============================================
+   Cabecera de la app
+   ============================================= */
+.cabecera-app {
+    background: #fff;
+    border-radius: var(--radius-card);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cabecera-icono {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.cabecera-titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-gray-800);
+}
+
+/* =============================================
+   Tarjetas (cards)
+   ============================================= */
 .card {
     background-color: #ffffff;
     border: 1px solid var(--color-gray-200);
     border-radius: var(--radius-card);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
 }
 
+/* Cabecera interna de una card: línea divisora índigo */
+.card-cabecera,
 .card-header-accent {
     border-bottom: 2px solid var(--color-indigo-100);
     padding-bottom: 0.75rem;
     margin-bottom: 1rem;
 }
 
-/* Títulos */
-h1, h2, h3, h4, h5, h6 {
-    color: var(--color-gray-800);
-    font-weight: 700;
+.tarjeta-asignatura {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-/* Botones principales */
+.tarjeta-asignatura:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.11);
+}
+
+/* Tarjeta de "Nueva asignatura" */
+.tarjeta-anadir {
+    border: 2px dashed var(--color-gray-200);
+    background-color: var(--color-gray-50);
+    box-shadow: none;
+}
+
+/* =============================================
+   Selector de titulación / curso / trimestre
+   ============================================= */
+.selector-nav {
+    padding: 0.75rem 1.25rem;
+}
+
+.selector-fila {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0;
+}
+
+.selector-fila + .selector-fila {
+    border-top: 1px solid var(--color-gray-100);
+}
+
+.selector-etiqueta {
+    font-size: 0.8rem;
+    color: var(--color-gray-600);
+    font-weight: 600;
+    min-width: 75px;
+    flex-shrink: 0;
+}
+
+.btn-selector {
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-input);
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-200);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    display: inline-block;
+}
+
+.btn-selector:hover {
+    background: var(--color-indigo-100);
+    color: var(--color-indigo-700);
+    border-color: var(--color-indigo-200);
+}
+
+.btn-selector--activo {
+    background: var(--color-indigo-600);
+    color: #fff;
+    border-color: var(--color-indigo-600);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.btn-selector--activo:hover {
+    background: var(--color-indigo-700);
+    color: #fff;
+    border-color: var(--color-indigo-700);
+}
+
+/* =============================================
+   Panel resumen del trimestre
+   ============================================= */
+.panel-resumen {
+    background: linear-gradient(135deg, #6366f1 0%, #9333ea 100%);
+    border-radius: var(--radius-card);
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+    border: none;
+}
+
+.panel-resumen__titulo {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.85rem;
+}
+
+.resumen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+}
+
+.resumen-card {
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.resumen-card__nombre {
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resumen-card__nota {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.resumen-sobresaliente { background-color: #22c55e; }
+.resumen-notable       { background-color: #4ade80; color: #14532d; }
+.resumen-aprobado      { background-color: #3b82f6; }
+.resumen-suficiente    { background-color: #f97316; }
+.resumen-suspenso      { background-color: #ef4444; }
+.resumen-sin-nota      { background-color: rgba(255, 255, 255, 0.2); }
+
+.resumen-media-general {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* =============================================
+   Notas en grande
+   ============================================= */
+.nota-grande {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Caja de nota final en tarjetas del dashboard */
+.nota-final-caja {
+    background-color: var(--color-indigo-50);
+    border: 2px solid var(--color-indigo-200);
+    border-radius: var(--radius-card);
+    padding: 0.65rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Caja de nota final en la vista de detalle */
+.caja-media-final {
+    background-color: var(--color-indigo-50);
+    border: 2px solid var(--color-indigo-200);
+    border-radius: var(--radius-card);
+    padding: 1rem 1.25rem;
+}
+
+/* =============================================
+   Colores de notas
+   ============================================= */
+.nota-sobresaliente { color: #16a34a; font-weight: 700; }
+.nota-notable       { color: #15803d; font-weight: 600; }
+.nota-aprobado      { color: #2563eb; font-weight: 600; }
+.nota-suficiente    { color: #d97706; font-weight: 600; }
+.nota-suspenso      { color: #dc2626; font-weight: 700; }
+
+/* =============================================
+   Botones principales
+   ============================================= */
 .btn-primary {
     background-color: var(--color-indigo-600);
     border-color: var(--color-indigo-600);
@@ -51,7 +276,8 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
 }
 
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover,
+.btn-primary:focus {
     background-color: var(--color-indigo-700);
     border-color: var(--color-indigo-700);
 }
@@ -94,18 +320,25 @@ h1, h2, h3, h4, h5, h6 {
     color: #b91c1c;
 }
 
-/* Inputs y controles */
-.form-control, .form-select, .input-group-text {
+/* =============================================
+   Inputs y controles
+   ============================================= */
+.form-control,
+.form-select,
+.input-group-text {
     border-radius: var(--radius-input);
     border: 1px solid #d1d5db;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
 }
 
-/* Badges y chips de notas */
+/* =============================================
+   Badges y chips de notas (vista detalle)
+   ============================================= */
 .badge-peso {
     background-color: var(--color-indigo-100);
     color: var(--color-indigo-700);
@@ -148,7 +381,9 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem;
 }
 
-/* Alertas estilo suave */
+/* =============================================
+   Alertas estilo suave
+   ============================================= */
 .alert-success {
     background-color: #ecfdf5;
     border-color: #a7f3d0;
@@ -170,31 +405,78 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: var(--radius-card);
 }
 
-/* Lista de asignaturas */
-.list-group-item {
-    border-radius: var(--radius-input) !important;
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--color-gray-200);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+/* =============================================
+   Enlace "volver" (detalle → lista)
+   ============================================= */
+.enlace-volver {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-gray-600);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
 }
 
-.list-group-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+.enlace-volver:hover {
+    color: var(--color-indigo-600);
 }
 
-/* Colores de notas */
-.nota-sobresaliente { color: #16a34a; font-weight: 700; }
-.nota-notable { color: #15803d; font-weight: 600; }
-.nota-aprobado { color: #2563eb; font-weight: 600; }
-.nota-suficiente { color: #d97706; font-weight: 600; }
-.nota-suspenso { color: #dc2626; font-weight: 700; }
-
-.caja-media-final {
-    background-color: var(--color-indigo-50);
-    border: 2px solid var(--color-indigo-200);
-    border-radius: var(--radius-card);
-    padding: 1rem 1.25rem;
+/* =============================================
+   Botón ✎ de editar inline
+   ============================================= */
+.btn-editar-icono {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-gray-600);
+    font-size: 1rem;
+    padding: 0.15rem 0.35rem;
+    border-radius: var(--radius-input);
+    list-style: none;
+    line-height: 1;
+    transition: color 0.15s ease, background 0.15s ease;
 }
 
+.btn-editar-icono::-webkit-details-marker {
+    display: none;
+}
+
+.btn-editar-icono:hover {
+    color: var(--color-indigo-600);
+    background: var(--color-indigo-50);
+}
+
+/* =============================================
+   Desplegable de configuración de categoría
+   ============================================= */
+.detalles-config {
+    border-top: 1px solid var(--color-gray-200);
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.detalles-config-summary {
+    font-size: 0.82rem;
+    color: var(--color-gray-600);
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.detalles-config-summary::-webkit-details-marker {
+    display: none;
+}
+
+.detalles-config-summary::before {
+    content: '▸';
+    font-size: 0.75rem;
+    transition: transform 0.15s ease;
+}
+
+.detalles-config[open] .detalles-config-summary::before {
+    transform: rotate(90deg);
+}
