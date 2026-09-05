@@ -10,24 +10,26 @@ class Categoria
         return $stmt->fetchAll();
     }
 
-    public static function crear(int $asignaturaId, string $nombre, float $peso): void
+    public static function crear(int $asignaturaId, string $nombre, float $peso, string $tipo = 'lista'): void
     {
         $pdo = Gestor::getConexion();
         $stmt = $pdo->prepare(
-            "INSERT INTO categorias (asignatura_id, nombre, peso) VALUES (:asignatura_id, :nombre, :peso)"
+            "INSERT INTO categorias (asignatura_id, nombre, peso, tipo) VALUES (:asignatura_id, :nombre, :peso, :tipo)"
         );
         $stmt->bindValue(':asignatura_id', $asignaturaId, PDO::PARAM_INT);
         $stmt->bindValue(':nombre', $nombre, PDO::PARAM_STR);
         $stmt->bindValue(':peso', $peso);
+        $stmt->bindValue(':tipo', $tipo, PDO::PARAM_STR);
         $stmt->execute();
     }
 
-    public static function editar(int $id, string $nombreNuevo, float $pesoNuevo): void
+    public static function editar(int $id, string $nombreNuevo, float $pesoNuevo, string $tipoNuevo = 'lista'): void
     {
         $pdo = Gestor::getConexion();
-        $stmt = $pdo->prepare("UPDATE categorias SET nombre = :nombre, peso = :peso WHERE id = :id");
+        $stmt = $pdo->prepare("UPDATE categorias SET nombre = :nombre, peso = :peso, tipo = :tipo WHERE id = :id");
         $stmt->bindValue(':nombre', $nombreNuevo, PDO::PARAM_STR);
         $stmt->bindValue(':peso', $pesoNuevo);
+        $stmt->bindValue(':tipo', $tipoNuevo, PDO::PARAM_STR);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
@@ -35,7 +37,7 @@ class Categoria
     public static function obtenerUna(int $id)
     {
         $pdo = Gestor::getConexion();
-        $stmt = $pdo->prepare("SELECT id, asignatura_id, nombre, peso FROM categorias WHERE id = :id");
+        $stmt = $pdo->prepare("SELECT id, asignatura_id, nombre, peso, tipo FROM categorias WHERE id = :id");
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();

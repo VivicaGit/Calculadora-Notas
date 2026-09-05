@@ -72,6 +72,9 @@ function claseColorNota($nota) {
                                 <h4 class="h5 mb-0 fw-bold">
                                     <?= htmlspecialchars($cat['nombre']) ?>
                                     <span class="badge-peso ms-2"><?= $cat['peso'] ?>%</span>
+                                    <?php if ($cat['tipo'] === 'unica'): ?>
+                                        <span class="badge bg-light text-secondary border ms-1" style="font-size: 0.75rem; font-weight: normal;">Nota única</span>
+                                    <?php endif; ?>
                                 </h4>
                                 <!-- Toggle de editar justo debajo del nombre, dentro del header -->
                                 <details class="detalles-config mt-2">
@@ -80,19 +83,25 @@ function claseColorNota($nota) {
                                           method="POST"
                                           class="row g-2 align-items-center mt-2">
                                         <input type="hidden" name="id" value="<?= $cat['id'] ?>">
-                                        <div class="col-sm-5">
+                                        <div class="col-sm-4">
                                             <input type="text" name="nombre"
                                                    value="<?= htmlspecialchars($cat['nombre']) ?>"
                                                    class="form-control form-control-sm" required>
                                         </div>
-                                        <div class="col-sm-3">
+                                        <div class="col-sm-2">
                                             <div class="input-group input-group-sm">
                                                 <input type="number" name="peso" value="<?= $cat['peso'] ?>"
                                                        min="1" max="100" class="form-control" required>
                                                 <span class="input-group-text">%</span>
                                             </div>
                                         </div>
-                                        <div class="col-sm-4 d-flex gap-2 justify-content-sm-end">
+                                        <div class="col-sm-3">
+                                            <select name="tipo" class="form-select form-select-sm">
+                                                <option value="lista" <?= $cat['tipo'] === 'lista' ? 'selected' : '' ?>>Varias notas</option>
+                                                <option value="unica" <?= $cat['tipo'] === 'unica' ? 'selected' : '' ?>>Nota única</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3 d-flex gap-2 justify-content-sm-end">
                                             <button type="submit" class="btn btn-sm btn-outline-secondary">Guardar</button>
                                             <a href="index.php?accion=borrar&id=<?= $cat['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
                                                class="btn btn-sm btn-outline-danger"
@@ -103,7 +112,7 @@ function claseColorNota($nota) {
                             </div>
                             <?php if ($cat['media'] !== null): ?>
                                 <span class="fw-bold <?= claseColorNota($cat['media']) ?>">
-                                    Media: <?= number_format($cat['media'], 2) ?>
+                                    <?= $cat['tipo'] === 'unica' ? 'Nota: ' : 'Media: ' ?><?= number_format($cat['media'], 2) ?>
                                 </span>
                             <?php endif; ?>
                         </div>
@@ -111,32 +120,58 @@ function claseColorNota($nota) {
                         <!-- Notas de la categoría -->
                         <div class="caja-notas mb-3">
                             <div class="d-flex flex-wrap align-items-center gap-2">
-                                <span class="text-muted small fw-semibold me-1">Notas:</span>
-                                <?php if (!empty($cat['notas'])): ?>
-                                    <?php foreach ($cat['notas'] as $nota): ?>
+                                <?php if ($cat['tipo'] === 'unica'): ?>
+                                    <span class="text-muted small fw-semibold me-1">Nota:</span>
+                                    <?php if (!empty($cat['notas'])): ?>
+                                        <?php $notaUnica = $cat['notas'][0]; ?>
                                         <span class="chip-nota">
-                                            <span><?= number_format($nota['valor'], 2) ?></span>
-                                            <a href="index.php?controlador=nota&accion=borrar&id=<?= $nota['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
+                                            <span><?= number_format($notaUnica['valor'], 2) ?></span>
+                                            <a href="index.php?controlador=nota&accion=borrar&id=<?= $notaUnica['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
                                                class="chip-nota-del"
                                                title="Borrar nota"
                                                onclick="return confirm('¿Borrar esta nota?')">&times;</a>
                                         </span>
-                                    <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <span class="text-muted fst-italic small">Sin nota registrada</span>
+                                        <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
+                                              method="POST"
+                                              class="d-inline-flex gap-1 ms-auto">
+                                            <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
+                                            <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
+                                            <input type="number" name="valor" step="0.01" min="0" max="10"
+                                                   placeholder="0.00" required
+                                                   class="form-control form-control-sm text-center" style="width: 75px;">
+                                            <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                        </form>
+                                    <?php endif; ?>
                                 <?php else: ?>
-                                    <span class="text-muted fst-italic small">Sin notas registradas</span>
-                                <?php endif; ?>
+                                    <span class="text-muted small fw-semibold me-1">Notas:</span>
+                                    <?php if (!empty($cat['notas'])): ?>
+                                        <?php foreach ($cat['notas'] as $nota): ?>
+                                            <span class="chip-nota">
+                                                <span><?= number_format($nota['valor'], 2) ?></span>
+                                                <a href="index.php?controlador=nota&accion=borrar&id=<?= $nota['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
+                                                   class="chip-nota-del"
+                                                   title="Borrar nota"
+                                                   onclick="return confirm('¿Borrar esta nota?')">&times;</a>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <span class="text-muted fst-italic small">Sin notas registradas</span>
+                                    <?php endif; ?>
 
-                                <!-- Formulario añadir nota -->
-                                <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
-                                      method="POST"
-                                      class="d-inline-flex gap-1 ms-auto">
-                                    <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
-                                    <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
-                                    <input type="number" name="valor" step="0.01" min="0" max="10"
-                                           placeholder="0.00" required
-                                           class="form-control form-control-sm text-center" style="width: 75px;">
-                                    <button type="submit" class="btn btn-sm btn-primary">Añadir</button>
-                                </form>
+                                    <!-- Formulario añadir nota -->
+                                    <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
+                                          method="POST"
+                                          class="d-inline-flex gap-1 ms-auto">
+                                        <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
+                                        <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
+                                        <input type="number" name="valor" step="0.01" min="0" max="10"
+                                               placeholder="0.00" required
+                                               class="form-control form-control-sm text-center" style="width: 75px;">
+                                        <button type="submit" class="btn btn-sm btn-primary">Añadir</button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -158,19 +193,25 @@ function claseColorNota($nota) {
                     <form action="index.php?accion=crear&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
                           method="POST"
                           class="row g-2">
-                        <div class="col-sm-6">
+                        <div class="col-sm-5">
                             <input type="text" name="nombre"
                                    placeholder="Nombre (ej: Exámenes, Prácticas)"
                                    class="form-control" required>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="input-group">
                                 <input type="number" name="peso" placeholder="Peso"
                                        min="1" max="100" class="form-control" required>
                                 <span class="input-group-text">%</span>
                             </div>
                         </div>
-                        <div class="col-sm-3 d-grid">
+                        <div class="col-sm-3">
+                            <select name="tipo" class="form-select">
+                                <option value="lista">Varias notas (media)</option>
+                                <option value="unica">Nota única (fija)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 d-grid">
                             <button type="submit" class="btn btn-primary">Añadir</button>
                         </div>
                     </form>
