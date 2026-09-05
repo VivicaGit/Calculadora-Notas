@@ -11,7 +11,7 @@ class Nota
         return $stmt->fetchAll();
     }
 
-    public static function crear(int $categoriaId, float $valor, int $trimestreId = 1): void
+    public static function crear(int $categoriaId, float $valor, int $trimestreId = 1): int
     {
         $pdo = Gestor::getConexion();
         $stmt = $pdo->prepare("INSERT INTO notas (categoria_id, trimestre_id, valor) VALUES (:categoria_id, :trimestre_id, :valor)");
@@ -19,6 +19,7 @@ class Nota
         $stmt->bindValue(':trimestre_id', $trimestreId, PDO::PARAM_INT);
         $stmt->bindValue(':valor', $valor);
         $stmt->execute();
+        return (int) $pdo->lastInsertId();
     }
 
     public static function borrar(int $id): void

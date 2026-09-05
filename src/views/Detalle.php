@@ -43,11 +43,11 @@ function claseColorNota($nota) {
         <div class="caja-media-final d-flex justify-content-between align-items-center mb-4">
             <span class="fs-5 fw-bold text-dark">Nota final del trimestre</span>
             <?php if ($mediaAsignatura !== null): ?>
-                <span class="nota-grande <?= claseColorNota($mediaAsignatura) ?>">
+                <span id="media-asignatura" class="nota-grande <?= claseColorNota($mediaAsignatura) ?>">
                     <?= number_format($mediaAsignatura, 2) ?>
                 </span>
             <?php else: ?>
-                <span class="nota-grande text-muted">--</span>
+                <span id="media-asignatura" class="nota-grande text-muted">--</span>
             <?php endif; ?>
         </div>
 
@@ -70,7 +70,11 @@ function claseColorNota($nota) {
             <?php if (!empty($categorias)): ?>
             <div class="d-flex flex-column gap-3 mb-4">
                 <?php foreach ($categorias as $cat): ?>
-                <article class="card">
+                <article class="card categoria-card"
+                         data-id="<?= $cat['id'] ?>"
+                         data-tipo="<?= $cat['tipo'] ?>"
+                         data-peso="<?= $cat['peso'] ?>"
+                         data-media-actual="<?= $cat['media'] !== null ? $cat['media'] : '' ?>">
                     <div class="card-body p-4">
 
                         <!-- Cabecera de la categoría -->
@@ -116,9 +120,11 @@ function claseColorNota($nota) {
                             </div>
                             <div class="d-flex align-items-center gap-3">
                                 <?php if ($cat['media'] !== null): ?>
-                                    <span class="fw-bold <?= claseColorNota($cat['media']) ?>">
+                                    <span class="media-categoria fw-bold <?= claseColorNota($cat['media']) ?>">
                                         <?= $cat['tipo'] === 'unica' ? 'Nota: ' : 'Media: ' ?><?= number_format($cat['media'], 2) ?>
                                     </span>
+                                <?php else: ?>
+                                    <span class="media-categoria fw-bold"></span>
                                 <?php endif; ?>
                                 <a href="index.php?accion=borrar&id=<?= $cat['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
                                    class="text-danger text-decoration-none"
@@ -130,23 +136,33 @@ function claseColorNota($nota) {
 
                         <!-- Notas de la categoría -->
                         <div class="caja-notas mb-3">
-                            <div class="d-flex flex-wrap align-items-center gap-2">
+                            <div class="chips-notas d-flex flex-wrap align-items-center gap-2">
                                 <?php if ($cat['tipo'] === 'unica'): ?>
                                     <span class="text-muted small fw-semibold me-1">Nota:</span>
                                     <?php if (!empty($cat['notas'])): ?>
                                         <?php $notaUnica = $cat['notas'][0]; ?>
-                                        <span class="chip-nota">
+                                        <span class="chip-nota" data-valor="<?= $notaUnica['valor'] ?>">
                                             <span><?= number_format($notaUnica['valor'], 2) ?></span>
                                             <a href="index.php?controlador=nota&accion=borrar&id=<?= $notaUnica['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
                                                class="chip-nota-del"
-                                               title="Borrar nota"
-                                               onclick="return confirm('¿Borrar esta nota?')">&times;</a>
+                                               title="Borrar nota">&times;</a>
                                         </span>
-                                    <?php else: ?>
-                                        <span class="text-muted fst-italic small">Sin nota registrada</span>
                                         <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
                                               method="POST"
-                                              class="d-inline-flex gap-1 ms-auto">
+                                              class="form-nota-crear d-inline-flex gap-1 ms-auto"
+                                              style="display:none !important;">
+                                            <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
+                                            <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
+                                            <input type="number" name="valor" step="0.01" min="0" max="10"
+                                                   placeholder="0.00" required
+                                                   class="form-control form-control-sm text-center" style="width: 75px;">
+                                            <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="sin-notas text-muted fst-italic small">Sin nota registrada</span>
+                                        <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
+                                              method="POST"
+                                              class="form-nota-crear d-inline-flex gap-1 ms-auto">
                                             <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
                                             <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
                                             <input type="number" name="valor" step="0.01" min="0" max="10"
@@ -159,22 +175,21 @@ function claseColorNota($nota) {
                                     <span class="text-muted small fw-semibold me-1">Notas:</span>
                                     <?php if (!empty($cat['notas'])): ?>
                                         <?php foreach ($cat['notas'] as $nota): ?>
-                                            <span class="chip-nota">
+                                            <span class="chip-nota" data-valor="<?= $nota['valor'] ?>">
                                                 <span><?= number_format($nota['valor'], 2) ?></span>
                                                 <a href="index.php?controlador=nota&accion=borrar&id=<?= $nota['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
                                                    class="chip-nota-del"
-                                                   title="Borrar nota"
-                                                   onclick="return confirm('¿Borrar esta nota?')">&times;</a>
+                                                   title="Borrar nota">&times;</a>
                                             </span>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <span class="text-muted fst-italic small">Sin notas registradas</span>
+                                        <span class="sin-notas text-muted fst-italic small">Sin notas registradas</span>
                                     <?php endif; ?>
 
                                     <!-- Formulario añadir nota -->
                                     <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
                                           method="POST"
-                                          class="d-inline-flex gap-1 ms-auto">
+                                          class="form-nota-crear d-inline-flex gap-1 ms-auto">
                                         <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
                                         <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
                                         <input type="number" name="valor" step="0.01" min="0" max="10"
@@ -319,5 +334,6 @@ function claseColorNota($nota) {
         </section>
     </main>
 </div>
+<script src="js/notas.js"></script>
 </body>
 </html>
