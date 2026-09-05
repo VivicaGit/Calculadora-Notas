@@ -8,6 +8,8 @@ if ($controlador === 'categoria') {
     require __DIR__ . '/controllers/CategoriaController.php';
 } elseif ($controlador === 'nota') {
     require __DIR__ . '/controllers/NotaController.php';
+} elseif ($controlador === 'plantilla') {
+    require __DIR__ . '/controllers/PlantillaController.php';
 } else {
     require __DIR__ . '/controllers/AsignaturaController.php';
 }

@@ -181,12 +181,27 @@ function claseColorNota($nota) {
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div class="alert alert-info mb-4">No hay categorías de evaluación configuradas para esta asignatura.</div>
+            <div class="alert alert-info mb-4">
+                <p class="mb-0">No hay categorías de evaluación configuradas para esta asignatura.</p>
+                <?php if (!empty($plantillas)): ?>
+                    <form action="index.php?controlador=plantilla&accion=aplicar&asignatura_id=<?= $asignatura['id'] ?>"
+                          method="POST"
+                          class="d-flex flex-wrap gap-2 align-items-center mt-3 pt-2 border-top">
+                        <span class="small fw-semibold">¿Aplicar una plantilla existente?</span>
+                        <select name="plantilla_id" class="form-select form-select-sm w-auto" required>
+                            <?php foreach ($plantillas as $pl): ?>
+                                <option value="<?= $pl['id'] ?>"><?= htmlspecialchars($pl['nombre']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary">Aplicar plantilla</button>
+                    </form>
+                <?php endif; ?>
+            </div>
             <?php endif; ?>
         </section>
 
         <!-- Añadir categoría -->
-        <section aria-label="Añadir categoría">
+        <section aria-label="Añadir categoría" class="mb-4">
             <div class="card">
                 <div class="card-body p-4">
                     <h3 class="h5 card-title mb-3">Añadir categoría</h3>
@@ -217,6 +232,75 @@ function claseColorNota($nota) {
                     </form>
                 </div>
             </div>
+        </section>
+
+        <!-- Plantillas de pesos -->
+        <section aria-label="Plantillas de pesos">
+            <details class="detalles-config">
+                <summary class="detalles-config-summary text-secondary fw-semibold">
+                    📋 Plantillas de pesos (<?= count($plantillas) ?> disponibles)
+                </summary>
+                <div class="card mt-2">
+                    <div class="card-body p-3">
+                        <div class="row g-3">
+                            <!-- Aplicar plantilla -->
+                            <div class="col-md-6">
+                                <h4 class="h6 fw-bold mb-2">Aplicar plantilla a esta asignatura</h4>
+                                <?php if (!empty($plantillas)): ?>
+                                    <form action="index.php?controlador=plantilla&accion=aplicar&asignatura_id=<?= $asignatura['id'] ?>"
+                                          method="POST"
+                                          class="d-flex gap-2 align-items-center">
+                                        <select name="plantilla_id" class="form-select form-select-sm" required>
+                                            <option value="">-- Seleccionar plantilla --</option>
+                                            <?php foreach ($plantillas as $pl): ?>
+                                                <option value="<?= $pl['id'] ?>"><?= htmlspecialchars($pl['nombre']) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Aplicar</button>
+                                    </form>
+                                <?php else: ?>
+                                    <p class="text-muted small mb-0 fst-italic">No tienes plantillas guardadas todavía.</p>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Guardar configuración actual como plantilla -->
+                            <div class="col-md-6">
+                                <h4 class="h6 fw-bold mb-2">Guardar categorías actuales como plantilla</h4>
+                                <?php if (!empty($categorias)): ?>
+                                    <form action="index.php?controlador=plantilla&accion=guardar&asignatura_id=<?= $asignatura['id'] ?>"
+                                          method="POST"
+                                          class="d-flex gap-2 align-items-center">
+                                        <input type="text" name="nombre" placeholder="Nombre (ej: Estándar DAW)"
+                                               class="form-control form-control-sm" required>
+                                        <button type="submit" class="btn btn-sm btn-outline-success text-nowrap">Guardar</button>
+                                    </form>
+                                <?php else: ?>
+                                    <p class="text-muted small mb-0 fst-italic">Añade categorías primero para poder guardarlas como plantilla.</p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Lista para borrar plantillas -->
+                        <?php if (!empty($plantillas)): ?>
+                            <hr class="my-3">
+                            <div>
+                                <span class="text-muted small fw-semibold">Tus plantillas guardadas:</span>
+                                <div class="d-flex flex-wrap gap-2 mt-1">
+                                    <?php foreach ($plantillas as $pl): ?>
+                                        <span class="chip-nota">
+                                            <span><?= htmlspecialchars($pl['nombre']) ?></span>
+                                            <a href="index.php?controlador=plantilla&accion=borrar&id=<?= $pl['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>"
+                                               class="chip-nota-del"
+                                               title="Borrar plantilla"
+                                               onclick="return confirm('¿Borrar esta plantilla?')">&times;</a>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </details>
         </section>
     </main>
 </div>

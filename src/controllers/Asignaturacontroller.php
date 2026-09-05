@@ -35,6 +35,7 @@ if ($accion === 'detalle' && isset($_GET['id'])) {
     unset($cat);
     $mediaAsignatura = Asignatura::calcularMedia($categorias);
     $sumaPesos       = Categoria::sumaPesos($asignaturaId);
+    $plantillas      = Plantilla::obtenerPorUsuario($usuarioId);
     require __DIR__ . '/../views/detalle.php';
     exit;
 }
