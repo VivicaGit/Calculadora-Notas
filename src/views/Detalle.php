@@ -32,6 +32,13 @@ function claseColorNota($nota) {
 
         <h2 class="h2 mb-4"><?= htmlspecialchars($asignatura['nombre']) ?></h2>
 
+        <?php if (!empty($_SESSION['aviso_plantilla'])): ?>
+            <div class="alert alert-warning py-2 px-3 mb-4">
+                <?= htmlspecialchars($_SESSION['aviso_plantilla']) ?>
+            </div>
+            <?php unset($_SESSION['aviso_plantilla']); ?>
+        <?php endif; ?>
+
         <!-- Nota final del trimestre -->
         <div class="caja-media-final d-flex justify-content-between align-items-center mb-4">
             <span class="fs-5 fw-bold text-dark">Nota final del trimestre</span>
@@ -76,7 +83,7 @@ function claseColorNota($nota) {
                                         <span class="badge bg-light text-secondary border ms-1" style="font-size: 0.75rem; font-weight: normal;">Nota única</span>
                                     <?php endif; ?>
                                 </h4>
-                                <!-- Toggle de editar justo debajo del nombre, dentro del header -->
+                                <!-- Toggle de editar: solo nombre, peso y tipo -->
                                 <details class="detalles-config mt-2">
                                     <summary class="detalles-config-summary">✎ Editar</summary>
                                     <form action="index.php?accion=editar&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
@@ -101,20 +108,24 @@ function claseColorNota($nota) {
                                                 <option value="unica" <?= $cat['tipo'] === 'unica' ? 'selected' : '' ?>>Nota única</option>
                                             </select>
                                         </div>
-                                        <div class="col-sm-3 d-flex gap-2 justify-content-sm-end">
+                                        <div class="col-sm-3 d-flex justify-content-sm-end">
                                             <button type="submit" class="btn btn-sm btn-outline-secondary">Guardar</button>
-                                            <a href="index.php?accion=borrar&id=<?= $cat['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
-                                               class="btn btn-sm btn-outline-danger"
-                                               onclick="return confirm('¿Borrar esta categoría?')">Borrar</a>
                                         </div>
                                     </form>
                                 </details>
                             </div>
-                            <?php if ($cat['media'] !== null): ?>
-                                <span class="fw-bold <?= claseColorNota($cat['media']) ?>">
-                                    <?= $cat['tipo'] === 'unica' ? 'Nota: ' : 'Media: ' ?><?= number_format($cat['media'], 2) ?>
-                                </span>
-                            <?php endif; ?>
+                            <div class="d-flex align-items-center gap-3">
+                                <?php if ($cat['media'] !== null): ?>
+                                    <span class="fw-bold <?= claseColorNota($cat['media']) ?>">
+                                        <?= $cat['tipo'] === 'unica' ? 'Nota: ' : 'Media: ' ?><?= number_format($cat['media'], 2) ?>
+                                    </span>
+                                <?php endif; ?>
+                                <a href="index.php?accion=borrar&id=<?= $cat['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
+                                   class="text-danger text-decoration-none"
+                                   style="font-size: 1.1rem; line-height: 1;"
+                                   title="Borrar categoría"
+                                   onclick="return confirm('¿Borrar la categoría «<?= htmlspecialchars($cat['nombre'], ENT_QUOTES) ?>»? Se perderán todas sus notas.')">&times;</a>
+                            </div>
                         </div>
 
                         <!-- Notas de la categoría -->
@@ -256,7 +267,11 @@ function claseColorNota($nota) {
                                                 <option value="<?= $pl['id'] ?>"><?= htmlspecialchars($pl['nombre']) ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">Aplicar</button>
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-primary text-nowrap"
+                                                <?php if (!empty($categorias)): ?>
+                                                onclick="return confirm('Esta asignatura ya tiene categorías. Las de la plantilla se añadirán encima, no se borrarán las existentes. ¿Continuar?')"
+                                                <?php endif; ?>>Aplicar</button>
                                     </form>
                                 <?php else: ?>
                                     <p class="text-muted small mb-0 fst-italic">No tienes plantillas guardadas todavía.</p>

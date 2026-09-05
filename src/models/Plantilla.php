@@ -21,6 +21,17 @@ class Plantilla
         return $stmt->fetchAll();
     }
 
+    // Comprueba si el usuario ya tiene una plantilla con ese nombre
+    public static function existeNombre(int $usuarioId, string $nombre): bool
+    {
+        $pdo = Gestor::getConexion();
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM plantillas WHERE usuario_id = :usuario_id AND nombre = :nombre");
+        $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+        $stmt->bindValue(':nombre', $nombre, PDO::PARAM_STR);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     // Guarda la configuración de categorías de una asignatura como una nueva plantilla
     public static function crearDesdeAsignatura(int $usuarioId, string $nombre, int $asignaturaId): void
     {

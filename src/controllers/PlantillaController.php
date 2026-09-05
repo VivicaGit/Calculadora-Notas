@@ -9,7 +9,11 @@ $accion       = $_GET['accion'] ?? '';
 if ($accion === 'guardar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     if ($nombre !== '' && $asignaturaId > 0) {
-        Plantilla::crearDesdeAsignatura($usuarioId, $nombre, $asignaturaId);
+        if (Plantilla::existeNombre($usuarioId, $nombre)) {
+            $_SESSION['aviso_plantilla'] = 'Ya tienes una plantilla llamada «' . $nombre . '». Elige otro nombre.';
+        } else {
+            Plantilla::crearDesdeAsignatura($usuarioId, $nombre, $asignaturaId);
+        }
     }
     header("Location: index.php?accion=detalle&id=$asignaturaId");
     exit;
