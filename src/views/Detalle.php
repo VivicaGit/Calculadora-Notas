@@ -28,9 +28,10 @@ function claseColorNota($nota) {
     </header>
 
     <main>
-        <nav aria-label="Miga de pan">
-            <a href="index.php" class="enlace-volver">← Mis asignaturas</a>
-        </nav>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="index.php" class="enlace-volver mb-0">← Mis asignaturas</a>
+            <button id="btn-modo-edicion" class="btn-modo-edicion" title="Modo edición (F2)">✎ Editar</button>
+        </div>
 
         <div class="d-flex align-items-center gap-2 mb-4">
             <h2 class="h2 mb-0"><?= htmlspecialchars($asignatura['nombre']) ?></h2>
@@ -343,6 +344,6 @@ function claseColorNota($nota) {
         </section>
     </main>
 </div>
-<script src="js/notas.js"></script>
+<script src="js/notas.js?v=<?= time() ?>"></script>
 </body>
 </html>

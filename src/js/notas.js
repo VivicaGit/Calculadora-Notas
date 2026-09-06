@@ -2,6 +2,9 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     iniciarEventos();
+    iniciarModoEdicion();
+    iniciarPanelAtalhos();
+    iniciarAtalhos();
 });
 
 function iniciarEventos() {
@@ -13,8 +16,9 @@ function iniciarEventos() {
         });
     });
 
-    // Interceptamos cada enlace de borrar nota (los que ya existen al cargar)
-    document.querySelectorAll('.chip-nota-del').forEach(function (enlace) {
+    // Solo los chips de nota — el enlace de borrar categoría tiene la misma clase
+    // pero no está dentro de .chip-nota, así que este selector no lo pilla
+    document.querySelectorAll('.chip-nota .chip-nota-del').forEach(function (enlace) {
         enlace.addEventListener('click', function (e) {
             e.preventDefault();
             if (!confirm('¿Borrar esta nota?')) return;
@@ -198,4 +202,125 @@ function claseColor(nota) {
     if (nota >= 5) return 'nota-aprobado';
     if (nota >= 4) return 'nota-suficiente';
     return 'nota-suspenso';
+}
+
+// Panel de atajos de teclado — se abre con ? y se cierra con Escape o clic fuera
+function iniciarPanelAtalhos() {
+    var overlay = document.createElement('div');
+    overlay.id = 'overlay-atajos';
+    overlay.className = 'overlay-atajos';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML =
+        '<div class="overlay-atajos__panel" role="dialog" aria-label="Atajos de teclado">' +
+            '<div class="overlay-atajos__cabecera">' +
+                '<span class="overlay-atajos__titulo">Atajos de teclado</span>' +
+                '<button class="overlay-atajos__cerrar" aria-label="Cerrar">&times;</button>' +
+            '</div>' +
+            '<table class="overlay-atajos__tabla"><tbody>' +
+                '<tr><td><kbd>?</kbd></td><td>Mostrar / ocultar esta ayuda</td></tr>' +
+                '<tr><td><kbd>F2</kbd></td><td>Activar / desactivar modo edición</td></tr>' +
+                '<tr><td><kbd>Alt+N</kbd></td><td>Nueva asignatura o categoría</td></tr>' +
+                '<tr><td><kbd>Alt+1</kbd> <kbd>2</kbd> <kbd>3</kbd></td><td>Cambiar de trimestre</td></tr>' +
+            '</tbody></table>' +
+        '</div>';
+    document.body.appendChild(overlay);
+
+    function abrir() {
+        overlay.classList.add('overlay-atajos--visible');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function cerrar() {
+        overlay.classList.remove('overlay-atajos--visible');
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    // Cerrar con el botón × del panel
+    overlay.querySelector('.overlay-atajos__cerrar').addEventListener('click', cerrar);
+
+    // Cerrar al hacer clic en el fondo oscuro (fuera del panel)
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) cerrar();
+    });
+
+    // Abrir/cerrar con ? y cerrar con Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.target.matches('input, textarea, select')) return;
+        if (e.key === '?') {
+            overlay.classList.contains('overlay-atajos--visible') ? cerrar() : abrir();
+        }
+        if (e.key === 'Escape') cerrar();
+    });
+}
+
+// Modo edición — muestra/oculta los controles de estructura de categorías
+function iniciarModoEdicion() {
+    var btn = document.getElementById('btn-modo-edicion');
+    if (!btn) return;
+
+    var main = document.querySelector('main');
+
+    // Restauro el estado de la sesión anterior
+    if (localStorage.getItem('modoEdicion') === '1') {
+        main.classList.add('modo-edicion');
+        btn.classList.add('btn-modo-edicion--activo');
+    }
+
+    btn.addEventListener('click', function () {
+        var activo = main.classList.toggle('modo-edicion');
+        btn.classList.toggle('btn-modo-edicion--activo', activo);
+        localStorage.setItem('modoEdicion', activo ? '1' : '0');
+    });
+}
+
+// Atajos de teclado
+function iniciarAtalhos() {
+
+    // Auto-focus al abrir cualquier formulario colapsable
+    document.querySelectorAll('details').forEach(function (det) {
+        det.addEventListener('toggle', function () {
+            if (!det.open) return;
+            // pequeño delay para que el navegador termine de mostrar el contenido
+            setTimeout(function () {
+                var input = det.querySelector('input[type="text"], input[type="number"]');
+                if (input) input.focus();
+            }, 50);
+        });
+    });
+
+    document.addEventListener('keydown', function (e) {
+        // No interferir si el foco está dentro de un campo editable
+        if (e.target.matches('input, textarea, select')) return;
+
+        // F2 — activar / desactivar modo edición
+        if (e.key === 'F2') {
+            var btnEdicion = document.getElementById('btn-modo-edicion');
+            if (btnEdicion) { e.preventDefault(); btnEdicion.click(); }
+        }
+
+        // Alt+N — abrir el formulario de nueva asignatura o nueva categoría
+        if (e.altKey && (e.key === 'n' || e.key === 'N')) {
+            e.preventDefault();
+            var toggle = document.querySelector('.new-subject-toggle');
+            if (!toggle) return;
+            toggle.open = true;
+            setTimeout(function () {
+                var input = toggle.querySelector('input[type="text"], input[type="number"]');
+                if (input) input.focus();
+            }, 50);
+        }
+
+        // Alt+1 / Alt+2 / Alt+3 — cambiar de trimestre
+        // Usamos e.code (físico) además de e.key porque con teclado español
+        // Alt+número puede producir un carácter distinto en e.key
+        if (e.altKey && (e.code === 'Digit1' || e.code === 'Digit2' || e.code === 'Digit3')) {
+            var lblTrimestre = document.getElementById('lbl-trimestre');
+            if (!lblTrimestre) return;
+            e.preventDefault();
+            var fila = lblTrimestre.closest('.selector-fila');
+            var botones = fila.querySelectorAll('.btn-selector');
+            var indice = parseInt(e.code.replace('Digit', ''), 10) - 1;
+            if (botones[indice]) botones[indice].click();
+        }
+    });
 }

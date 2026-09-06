@@ -174,5 +174,6 @@ function claseResumenCard($nota) {
         </section>
     </main>
 </div>
+<script src="js/notas.js?v=<?= time() ?>"></script>
 </body>
 </html>

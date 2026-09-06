@@ -522,6 +522,7 @@ h1, h2, h3, h4, h5, h6 {
     border-top: 1px solid var(--border);
     padding-top: 8px;
     margin-top: 8px;
+    display: none;
 }
 
 .detalles-config-summary {
@@ -588,4 +589,121 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     color: var(--accent);
     line-height: 1;
+}
+
+/* Modo edición — muestra los controles de estructura de categorías */
+main.modo-edicion .detalles-config {
+    display: block;
+}
+
+/* Botón de modo edición */
+.btn-modo-edicion {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-2);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.btn-modo-edicion:hover {
+    border-color: var(--text-3);
+    color: var(--text);
+}
+
+.btn-modo-edicion--activo {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Panel de atajos de teclado */
+.overlay-atajos {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-atajos--visible {
+    display: flex;
+}
+
+.overlay-atajos__panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    min-width: 340px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.overlay-atajos__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.overlay-atajos__titulo {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.overlay-atajos__cerrar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.overlay-atajos__cerrar:hover {
+    color: var(--text);
+}
+
+.overlay-atajos__tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.overlay-atajos__tabla td {
+    padding: 9px 0;
+    font-size: 13px;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+}
+
+.overlay-atajos__tabla tr:first-child td {
+    border-top: none;
+}
+
+.overlay-atajos__tabla td:first-child {
+    white-space: nowrap;
+    padding-right: 20px;
+    color: var(--text-2);
+}
+
+kbd {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text);
 }
