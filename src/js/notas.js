@@ -61,7 +61,7 @@ function crearNota(form) {
 
         // Para categorías de tipo único: ocultamos el formulario tras guardar
         if (tipo === 'unica') {
-            form.style.display = 'none';
+            form.classList.add('d-none');
         }
 
         inputValor.value = '';
@@ -100,7 +100,7 @@ function borrarNota(enlace) {
         // Para tipo único: volvemos a mostrar el formulario
         if (tipo === 'unica') {
             const formUnica = article.querySelector('.form-nota-crear');
-            if (formUnica) formUnica.style.display = '';
+            if (formUnica) formUnica.classList.remove('d-none');
         }
 
         actualizarMediaCategoria(article);

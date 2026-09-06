@@ -14,15 +14,17 @@ function claseColorNota($nota) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($asignatura['nombre']) ?> — Calculadora de Notas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=<?= time() ?>">
 </head>
 <body>
 <div class="contenedor-app">
 
     <header class="cabecera-app">
-        <span class="cabecera-icono" aria-hidden="true">📊</span>
-        <h1 class="cabecera-titulo">Calculadora de Notas</h1>
+        <h1 class="cabecera-titulo">Seguimiento de notas</h1>
     </header>
 
     <main>
@@ -30,7 +32,18 @@ function claseColorNota($nota) {
             <a href="index.php" class="enlace-volver">← Mis asignaturas</a>
         </nav>
 
-        <h2 class="h2 mb-4"><?= htmlspecialchars($asignatura['nombre']) ?></h2>
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <h2 class="h2 mb-0"><?= htmlspecialchars($asignatura['nombre']) ?></h2>
+            <details class="d-inline-block">
+                <summary class="btn-editar-icono" title="Renombrar asignatura">✎</summary>
+                <form action="index.php?accion=editar" method="POST" class="d-flex gap-1 mt-2">
+                    <input type="hidden" name="id" value="<?= $asignatura['id'] ?>">
+                    <input type="hidden" name="origen" value="detalle">
+                    <input type="text" name="nombre" value="<?= htmlspecialchars($asignatura['nombre']) ?>" class="form-control form-control-sm" required>
+                    <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                </form>
+            </details>
+        </div>
 
         <?php if (!empty($_SESSION['aviso_plantilla'])): ?>
             <div class="alert alert-warning py-2 px-3 mb-4">
@@ -41,7 +54,7 @@ function claseColorNota($nota) {
 
         <!-- Nota final del trimestre -->
         <div class="caja-media-final d-flex justify-content-between align-items-center mb-4">
-            <span class="fs-5 fw-bold text-dark">Nota final del trimestre</span>
+            <span class="label">Nota final del trimestre</span>
             <?php if ($mediaAsignatura !== null): ?>
                 <span id="media-asignatura" class="nota-grande <?= claseColorNota($mediaAsignatura) ?>">
                     <?= number_format($mediaAsignatura, 2) ?>
@@ -127,8 +140,7 @@ function claseColorNota($nota) {
                                     <span class="media-categoria fw-bold"></span>
                                 <?php endif; ?>
                                 <a href="index.php?accion=borrar&id=<?= $cat['id'] ?>&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
-                                   class="text-danger text-decoration-none"
-                                   style="font-size: 1.1rem; line-height: 1;"
+                                   class="chip-nota-del"
                                    title="Borrar categoría"
                                    onclick="return confirm('¿Borrar la categoría «<?= htmlspecialchars($cat['nombre'], ENT_QUOTES) ?>»? Se perderán todas sus notas.')">&times;</a>
                             </div>
@@ -149,8 +161,7 @@ function claseColorNota($nota) {
                                         </span>
                                         <form action="index.php?controlador=nota&accion=crear&asignatura_id=<?= $asignatura['id'] ?>"
                                               method="POST"
-                                              class="form-nota-crear d-inline-flex gap-1 ms-auto"
-                                              style="display:none !important;">
+                                              class="form-nota-crear d-none d-inline-flex gap-1 ms-auto">
                                             <input type="hidden" name="categoria_id" value="<?= $cat['id'] ?>">
                                             <input type="hidden" name="trimestre_id" value="<?= $trimestreId ?>">
                                             <input type="number" name="valor" step="0.01" min="0" max="10"
@@ -226,45 +237,43 @@ function claseColorNota($nota) {
             <?php endif; ?>
         </section>
 
-        <!-- Añadir categoría -->
-        <section aria-label="Añadir categoría" class="mb-4">
-            <div class="card">
-                <div class="card-body p-4">
-                    <h3 class="h5 card-title mb-3">Añadir categoría</h3>
-                    <form action="index.php?accion=crear&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
-                          method="POST"
-                          class="row g-2">
-                        <div class="col-sm-5">
-                            <input type="text" name="nombre"
-                                   placeholder="Nombre (ej: Exámenes, Prácticas)"
-                                   class="form-control" required>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="input-group">
-                                <input type="number" name="peso" placeholder="Peso"
-                                       min="1" max="100" class="form-control" required>
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <select name="tipo" class="form-select">
-                                <option value="lista">Varias notas (media)</option>
-                                <option value="unica">Nota única (fija)</option>
-                            </select>
-                        </div>
-                        <div class="col-sm-2 d-grid">
-                            <button type="submit" class="btn btn-primary">Añadir</button>
-                        </div>
-                    </form>
+        <!-- Añadir categoría colapsable -->
+        <details class="new-subject-toggle mb-4">
+            <summary class="new-subject-summary">
+                <span class="new-subject-plus">+</span> Nueva categoría
+            </summary>
+            <form action="index.php?accion=crear&asignatura_id=<?= $asignatura['id'] ?>&controlador=categoria"
+                  method="POST"
+                  class="row g-2 mt-2">
+                <div class="col-sm-5">
+                    <input type="text" name="nombre"
+                           placeholder="Nombre (ej: Exámenes, Prácticas)"
+                           class="form-control" required>
                 </div>
-            </div>
-        </section>
+                <div class="col-sm-2">
+                    <div class="input-group">
+                        <input type="number" name="peso" placeholder="Peso"
+                               min="1" max="100" class="form-control" required>
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <select name="tipo" class="form-select">
+                        <option value="lista">Varias notas (media)</option>
+                        <option value="unica">Nota única (fija)</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 d-grid">
+                    <button type="submit" class="btn btn-primary">Añadir</button>
+                </div>
+            </form>
+        </details>
 
         <!-- Plantillas de pesos -->
         <section aria-label="Plantillas de pesos">
             <details class="detalles-config">
                 <summary class="detalles-config-summary text-secondary fw-semibold">
-                    📋 Plantillas de pesos (<?= count($plantillas) ?> disponibles)
+                    Plantillas de pesos (<?= count($plantillas) ?> disponibles)
                 </summary>
                 <div class="card mt-2">
                     <div class="card-body p-3">

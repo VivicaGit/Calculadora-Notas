@@ -46,7 +46,11 @@ if ($accion === 'editar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id > 0 && $nombreNuevo !== '') {
         Asignatura::editar($id, $nombreNuevo);
     }
-    header('Location: index.php');
+    if (isset($_POST['origen']) && $_POST['origen'] === 'detalle') {
+        header('Location: index.php?accion=detalle&id=' . $id);
+    } else {
+        header('Location: index.php');
+    }
     exit;
 }
 

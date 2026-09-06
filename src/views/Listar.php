@@ -23,15 +23,17 @@ function claseResumenCard($nota) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Notas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilos.css?v=<?= time() ?>">
 </head>
 <body>
 <div class="contenedor-app">
 
     <header class="cabecera-app">
-        <span class="cabecera-icono" aria-hidden="true">📊</span>
-        <h1 class="cabecera-titulo">Calculadora de Notas</h1>
+        <h1 class="cabecera-titulo">Seguimiento de notas</h1>
     </header>
 
     <main>
@@ -84,9 +86,9 @@ function claseResumenCard($nota) {
         </nav>
 
         <?php if (!empty($asignaturas)): ?>
-        <!-- Panel resumen del trimestre (estilo calculadora1.html) -->
+        <!-- Panel resumen del trimestre -->
         <section class="panel-resumen mb-4" aria-label="Resumen del trimestre">
-            <h2 class="panel-resumen__titulo">📋 Resumen — <?= htmlspecialchars($trimestreNombre) ?></h2>
+            <h2 class="panel-resumen__titulo">Resumen — <?= htmlspecialchars($trimestreNombre) ?></h2>
             <div class="resumen-grid">
                 <?php foreach ($asignaturas as $asig): ?>
                     <div class="resumen-card <?= claseResumenCard($asig['media']) ?>">
@@ -116,25 +118,12 @@ function claseResumenCard($nota) {
                     <article class="card tarjeta-asignatura h-100">
                         <div class="card-body d-flex flex-column p-4">
                             <header class="card-cabecera">
-                                <div class="d-flex align-items-start justify-content-between gap-2">
-                                    <h2 class="h5 mb-0">
-                                        <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>"
-                                           class="text-decoration-none text-dark">
-                                            <?= htmlspecialchars($asig['nombre']) ?>
-                                        </a>
-                                    </h2>
-                                    <details class="flex-shrink-0">
-                                        <summary class="btn-editar-icono" title="Renombrar">✎</summary>
-                                        <form action="index.php?accion=editar" method="POST"
-                                              class="d-flex gap-1 mt-2">
-                                            <input type="hidden" name="id" value="<?= $asig['id'] ?>">
-                                            <input type="text" name="nombre"
-                                                   value="<?= htmlspecialchars($asig['nombre']) ?>"
-                                                   class="form-control form-control-sm" required>
-                                            <button type="submit" class="btn btn-sm btn-primary">✓</button>
-                                        </form>
-                                    </details>
-                                </div>
+                                <h2 class="h5 mb-0">
+                                    <a href="index.php?accion=detalle&id=<?= $asig['id'] ?>"
+                                       class="text-decoration-none text-dark">
+                                        <?= htmlspecialchars($asig['nombre']) ?>
+                                    </a>
+                                </h2>
                             </header>
 
                             <div class="nota-final-caja my-3">
@@ -159,21 +148,19 @@ function claseResumenCard($nota) {
                     </article>
                 </div>
                 <?php endforeach; ?>
-
-                <!-- Tarjeta para añadir nueva asignatura -->
-                <div class="col-12 col-sm-6">
-                    <article class="card tarjeta-anadir h-100">
-                        <div class="card-body d-flex flex-column justify-content-center p-4">
-                            <h2 class="h6 text-muted mb-3">Nueva asignatura</h2>
-                            <form action="index.php?accion=crear" method="POST" class="d-flex flex-column gap-2">
-                                <input type="text" name="nombre" class="form-control"
-                                       placeholder="Nombre de la asignatura" required>
-                                <button type="submit" class="btn btn-primary">Añadir</button>
-                            </form>
-                        </div>
-                    </article>
-                </div>
             </div>
+
+            <!-- Añadir nueva asignatura colapsable -->
+            <details class="new-subject-toggle mt-3">
+                <summary class="new-subject-summary">
+                    <span class="new-subject-plus">+</span> Nueva asignatura
+                </summary>
+                <form action="index.php?accion=crear" method="POST" class="d-flex gap-2 mt-3">
+                    <input type="text" name="nombre" class="form-control"
+                           placeholder="Nombre de la asignatura" required>
+                    <button type="submit" class="btn btn-primary text-nowrap">Añadir</button>
+                </form>
+            </details>
 
             <?php if (empty($asignaturas)): ?>
             <div class="alert alert-info mt-2">

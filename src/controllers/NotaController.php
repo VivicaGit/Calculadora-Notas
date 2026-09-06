@@ -17,6 +17,18 @@ if ($accion === 'crear' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validamos que la nota esté dentro del rango 0 a 10
     if ($categoriaId > 0 && $trimestreId > 0 && $valor >= 0 && $valor <= 10) {
+        $catInfo = Categoria::obtenerUna($categoriaId);
+        $notasExistentes = Nota::obtenerPorCategoria($categoriaId, $trimestreId);
+        if ($catInfo && $catInfo['tipo'] === 'unica' && count($notasExistentes) > 0) {
+            if ($esFetch) {
+                header('Content-Type: application/json');
+                echo json_encode(['ok' => false]);
+                exit;
+            }
+            header("Location: index.php?accion=detalle&id=$asignaturaId");
+            exit;
+        }
+
         $nuevaId = Nota::crear($categoriaId, $valor, $trimestreId);
         if ($esFetch) {
             header('Content-Type: application/json');
