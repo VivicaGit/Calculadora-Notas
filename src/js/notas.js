@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     iniciarModoEdicion();
     iniciarPanelAtalhos();
     iniciarAtalhos();
+    iniciarGestionEstructura();
 });
 
 function iniciarEventos() {
@@ -260,15 +261,29 @@ function iniciarModoEdicion() {
 
     var main = document.querySelector('main');
 
-    // Restauro el estado de la sesión anterior
-    if (localStorage.getItem('modoEdicion') === '1') {
-        main.classList.add('modo-edicion');
-        btn.classList.add('btn-modo-edicion--activo');
+    function aplicarEstado(activo) {
+        main.classList.toggle('modo-edicion', activo);
+        btn.classList.toggle('btn-modo-edicion--activo', activo);
+
+        // En la vista de lista: muestra/oculta los controles del selector
+        document.querySelectorAll('.btn-borrar-estructura, .btn-exportar-curso').forEach(function (el) {
+            el.classList.toggle('d-none', !activo);
+        });
+        var filasExtra = document.querySelectorAll(
+            '.fila-nueva-titulacion, .fila-nuevo-curso, .fila-importar'
+        );
+        filasExtra.forEach(function (fila) {
+            fila.classList.toggle('d-none', !activo);
+        });
     }
 
+    // Restauro el estado de la sesión anterior
+    var guardado = localStorage.getItem('modoEdicion') === '1';
+    aplicarEstado(guardado);
+
     btn.addEventListener('click', function () {
-        var activo = main.classList.toggle('modo-edicion');
-        btn.classList.toggle('btn-modo-edicion--activo', activo);
+        var activo = !main.classList.contains('modo-edicion');
+        aplicarEstado(activo);
         localStorage.setItem('modoEdicion', activo ? '1' : '0');
     });
 }
@@ -322,5 +337,92 @@ function iniciarAtalhos() {
             var indice = parseInt(e.code.replace('Digit', ''), 10) - 1;
             if (botones[indice]) botones[indice].click();
         }
+    });
+}
+
+// Gestión de titulaciones y cursos (modo edición en Listar)
+function iniciarGestionEstructura() {
+    var modal = document.getElementById('modal-borrar');
+    if (!modal) return; // solo existe en la vista de lista
+
+    var btnConfirmar   = document.getElementById('modal-borrar-confirmar');
+    var inputNombre    = document.getElementById('modal-borrar-input');
+    var inputId        = document.getElementById('modal-borrar-id');
+    var inputNombreOk  = document.getElementById('modal-borrar-nombre-confirmacion');
+    var form           = document.getElementById('modal-borrar-form');
+    var enlaceExportar = document.getElementById('modal-borrar-exportar');
+    var btnCancelar    = document.getElementById('modal-borrar-cancelar');
+
+    var nombreEsperado = '';
+
+    function abrirModal(tipo, id, nombre) {
+        nombreEsperado    = nombre;
+        inputId.value     = id;
+        inputNombre.value = '';
+        btnConfirmar.disabled = true;
+        inputNombreOk.value   = '';
+
+        document.getElementById('modal-borrar-titulo').textContent =
+            'Borrar ' + (tipo === 'curso' ? 'curso' : 'titulación') + ' «' + nombre + '»';
+
+        var aviso = document.getElementById('modal-borrar-aviso');
+        if (tipo === 'curso') {
+            aviso.innerHTML =
+                '<strong>Atención:</strong> se borrarán todas las asignaturas, ' +
+                'categorías y notas de este curso. Esta acción no se puede deshacer.';
+        } else {
+            aviso.innerHTML =
+                '<strong>Atención:</strong> se borrarán todos los cursos, ' +
+                'asignaturas y notas de esta titulación. Esta acción no se puede deshacer.';
+        }
+
+        // El enlace de exportar solo aplica a cursos
+        if (tipo === 'curso') {
+            enlaceExportar.href = 'index.php?controlador=estructura&accion=exportar-curso&curso_id=' + id;
+            enlaceExportar.style.display = 'inline-flex';
+        } else {
+            enlaceExportar.style.display = 'none';
+        }
+
+        document.getElementById('modal-borrar-label').textContent =
+            'Escribe «' + nombre + '» para confirmar:';
+        document.getElementById('modal-borrar-hint').textContent =
+            'El nombre debe coincidir exactamente para poder borrar.';
+
+        form.action = tipo === 'curso'
+            ? 'index.php?controlador=estructura&accion=borrar-curso'
+            : 'index.php?controlador=estructura&accion=borrar-titulacion';
+
+        modal.classList.add('modal-borrar--visible');
+        setTimeout(function () { inputNombre.focus(); }, 80);
+    }
+
+    function cerrarModal() {
+        modal.classList.remove('modal-borrar--visible');
+        inputNombre.value = '';
+        btnConfirmar.disabled = true;
+    }
+
+    // Habilito el botón solo cuando el nombre coincide exactamente
+    inputNombre.addEventListener('input', function () {
+        var coincide = inputNombre.value === nombreEsperado;
+        btnConfirmar.disabled = !coincide;
+        inputNombreOk.value   = coincide ? nombreEsperado : '';
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('modal-borrar--visible')) {
+            cerrarModal();
+        }
+    });
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) cerrarModal();
+    });
+    btnCancelar.addEventListener('click', cerrarModal);
+
+    document.querySelectorAll('.btn-borrar-estructura').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            abrirModal(btn.dataset.tipo, btn.dataset.id, btn.dataset.nombre);
+        });
     });
 }

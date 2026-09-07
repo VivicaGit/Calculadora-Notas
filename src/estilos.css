@@ -697,6 +697,113 @@ main.modo-edicion .detalles-config {
     color: var(--text-2);
 }
 
+/* Botones de gestión de estructura (borrar/exportar) en el selector */
+.btn-borrar-estructura {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 16px;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.btn-borrar-estructura:hover {
+    color: var(--warn);
+}
+
+.btn-exportar-curso {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 7px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    line-height: 1.4;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-exportar-curso:hover {
+    background: var(--accent);
+    color: #FFFFFF;
+}
+
+/* Modal de confirmación de borrado */
+.modal-borrar {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-borrar--visible {
+    display: flex;
+}
+
+.modal-borrar__panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.modal-borrar__titulo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.modal-borrar__aviso {
+    font-size: 13px;
+    color: var(--text-2);
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.modal-borrar__aviso strong {
+    color: var(--warn);
+}
+
+.modal-borrar__exportar {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.modal-borrar__exportar:hover {
+    text-decoration: underline;
+}
+
+.modal-borrar__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.modal-borrar__acciones {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
 kbd {
     background: var(--bg);
     border: 1px solid var(--border);

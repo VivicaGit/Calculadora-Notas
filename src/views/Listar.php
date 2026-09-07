@@ -32,8 +32,9 @@ function claseResumenCard($nota) {
 <body>
 <div class="contenedor-app">
 
-    <header class="cabecera-app">
+    <header class="cabecera-app d-flex justify-content-between align-items-center">
         <h1 class="cabecera-titulo">Seguimiento de notas</h1>
+        <button id="btn-modo-edicion" class="btn-modo-edicion" title="Modo edición (F2)">✎ Editar</button>
     </header>
 
     <main>
@@ -42,30 +43,115 @@ function claseResumenCard($nota) {
             <?php if (!empty($titulaciones)): ?>
             <div class="selector-fila">
                 <span class="selector-etiqueta" id="lbl-titulacion">Titulación</span>
-                <div class="d-flex flex-wrap gap-2" role="group" aria-labelledby="lbl-titulacion">
+                <div class="d-flex flex-wrap gap-2 align-items-center" role="group" aria-labelledby="lbl-titulacion">
                     <?php foreach ($titulaciones as $t): ?>
-                        <a href="index.php?accion=seleccionar&tipo=titulacion&id=<?= $t['id'] ?>"
-                           class="btn-selector <?= (int) $t['id'] === $titulacionId ? 'btn-selector--activo' : '' ?>"
-                           aria-current="<?= (int) $t['id'] === $titulacionId ? 'true' : 'false' ?>">
-                            <?= htmlspecialchars($t['nombre']) ?>
-                        </a>
+                        <span class="d-inline-flex align-items-center gap-1">
+                            <a href="index.php?accion=seleccionar&tipo=titulacion&id=<?= $t['id'] ?>"
+                               class="btn-selector <?= (int) $t['id'] === $titulacionId ? 'btn-selector--activo' : '' ?>"
+                               aria-current="<?= (int) $t['id'] === $titulacionId ? 'true' : 'false' ?>">
+                                <?= htmlspecialchars($t['nombre']) ?>
+                            </a>
+                            <button type="button"
+                                    class="btn-borrar-estructura d-none"
+                                    title="Borrar titulación"
+                                    data-tipo="titulacion"
+                                    data-id="<?= $t['id'] ?>"
+                                    data-nombre="<?= htmlspecialchars($t['nombre'], ENT_QUOTES) ?>"
+                                    aria-label="Borrar titulación <?= htmlspecialchars($t['nombre'], ENT_QUOTES) ?>">×</button>
+                        </span>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <!-- Nueva titulación (solo en modo edición) -->
+            <div class="selector-fila d-none fila-nueva-titulacion">
+                <span class="selector-etiqueta"></span>
+                <details class="new-subject-toggle" style="max-width: 400px;">
+                    <summary class="new-subject-summary">
+                        <span class="new-subject-plus">+</span> Nueva titulación
+                    </summary>
+                    <form action="index.php?controlador=estructura&accion=crear-titulacion" method="POST"
+                          class="d-flex gap-2 mt-3">
+                        <input type="text" name="nombre" class="form-control"
+                               placeholder="Ej: DAW, DAM, ASIR" required>
+                        <button type="submit" class="btn btn-primary text-nowrap">Añadir</button>
+                    </form>
+                </details>
+            </div>
+            <?php endif; ?>
+
+
+            <?php if (!empty($cursos)): ?>
+            <div class="selector-fila">
+                <span class="selector-etiqueta" id="lbl-curso">Curso</span>
+                <div class="d-flex flex-wrap gap-2 align-items-center" role="group" aria-labelledby="lbl-curso">
+                    <?php foreach ($cursos as $c): ?>
+                        <span class="d-inline-flex align-items-center gap-1">
+                            <a href="index.php?accion=seleccionar&tipo=curso&id=<?= $c['id'] ?>"
+                               class="btn-selector <?= (int) $c['id'] === $cursoId ? 'btn-selector--activo' : '' ?>"
+                               aria-current="<?= (int) $c['id'] === $cursoId ? 'true' : 'false' ?>">
+                                <?= htmlspecialchars($c['nombre']) ?>
+                            </a>
+                            <a href="index.php?controlador=estructura&accion=exportar-curso&curso_id=<?= $c['id'] ?>"
+                               class="btn-exportar-curso d-none"
+                               title="Exportar este curso como JSON">Exportar JSON</a>
+                            <button type="button"
+                                    class="btn-borrar-estructura d-none"
+                                    title="Borrar curso"
+                                    data-tipo="curso"
+                                    data-id="<?= $c['id'] ?>"
+                                    data-nombre="<?= htmlspecialchars($c['nombre'], ENT_QUOTES) ?>"
+                                    aria-label="Borrar curso <?= htmlspecialchars($c['nombre'], ENT_QUOTES) ?>">×</button>
+                        </span>
                     <?php endforeach; ?>
                 </div>
             </div>
             <?php endif; ?>
 
-            <?php if (!empty($cursos)): ?>
-            <div class="selector-fila">
-                <span class="selector-etiqueta" id="lbl-curso">Curso</span>
-                <div class="d-flex flex-wrap gap-2" role="group" aria-labelledby="lbl-curso">
-                    <?php foreach ($cursos as $c): ?>
-                        <a href="index.php?accion=seleccionar&tipo=curso&id=<?= $c['id'] ?>"
-                           class="btn-selector <?= (int) $c['id'] === $cursoId ? 'btn-selector--activo' : '' ?>"
-                           aria-current="<?= (int) $c['id'] === $cursoId ? 'true' : 'false' ?>">
-                            <?= htmlspecialchars($c['nombre']) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
+            <?php if ($titulacionId > 0): ?>
+            <!-- Nuevo curso (solo en modo edición) -->
+            <div class="selector-fila d-none fila-nuevo-curso">
+                <span class="selector-etiqueta"></span>
+                <details class="new-subject-toggle" style="max-width: 480px;">
+                    <summary class="new-subject-summary">
+                        <span class="new-subject-plus">+</span> Nuevo curso
+                    </summary>
+                    <form action="index.php?controlador=estructura&accion=crear-curso" method="POST"
+                          class="row g-2 mt-3">
+                        <input type="hidden" name="titulacion_id" value="<?= $titulacionId ?>">
+                        <div class="col-sm-5">
+                            <input type="text" name="nombre" class="form-control"
+                                   placeholder="Ej: 1º, 2º, 1º rep." required>
+                        </div>
+                        <div class="col-sm-4">
+                            <select name="trimestres" class="form-select" title="Número de trimestres">
+                                <option value="2">2 trimestres</option>
+                                <option value="3" selected>3 trimestres</option>
+                                <option value="4">4 trimestres</option>
+                                <option value="6">6 trimestres (semestral)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 d-grid">
+                            <button type="submit" class="btn btn-primary">Añadir</button>
+                        </div>
+                    </form>
+
+                </details>
+            </div>
+
+            <!-- Importar curso (solo en modo edición) -->
+            <div class="selector-fila d-none fila-importar">
+                <span class="selector-etiqueta"></span>
+                <details class="new-subject-toggle" style="max-width: 480px;">
+                    <summary class="new-subject-summary">
+                        <span class="new-subject-plus" style="font-size:14px;">↑</span> Importar curso desde JSON
+                    </summary>
+                    <form action="index.php?controlador=estructura&accion=importar-curso" method="POST"
+                          enctype="multipart/form-data"
+                          class="d-flex gap-2 mt-3 align-items-center">
+                        <input type="file" name="fichero" accept=".json" class="form-control" required>
+                        <button type="submit" class="btn btn-primary text-nowrap">Cargar</button>
+                    </form>
+                </details>
             </div>
             <?php endif; ?>
 
@@ -84,6 +170,7 @@ function claseResumenCard($nota) {
             </div>
             <?php endif; ?>
         </nav>
+
 
         <?php if (!empty($asignaturas)): ?>
         <!-- Panel resumen del trimestre -->
@@ -167,13 +254,37 @@ function claseResumenCard($nota) {
                 <?php if ($cursoId > 0): ?>
                     No hay asignaturas en este curso todavía. ¡Añade la primera!
                 <?php else: ?>
-                    Ejecuta <code>02_datos_prueba.sql</code> para crear la estructura de titulaciones, cursos y trimestres.
+                    Activa el modo edición para crear una titulación y un curso.
                 <?php endif; ?>
             </div>
             <?php endif; ?>
         </section>
     </main>
 </div>
+
+<!-- Modal de confirmación de borrado de titulación o curso -->
+<div id="modal-borrar" class="modal-borrar" role="dialog" aria-modal="true" aria-labelledby="modal-borrar-titulo">
+    <div class="modal-borrar__panel">
+        <p class="modal-borrar__titulo" id="modal-borrar-titulo"></p>
+        <p class="modal-borrar__aviso" id="modal-borrar-aviso"></p>
+        <a href="#" id="modal-borrar-exportar" class="modal-borrar__exportar" style="display:none;">
+            ↓ Exportar primero como JSON
+        </a>
+        <label class="modal-borrar__label" for="modal-borrar-input" id="modal-borrar-label"></label>
+        <input type="text" id="modal-borrar-input" class="form-control mb-1" autocomplete="off">
+        <p class="text-muted" style="font-size:12px; margin-bottom:0;" id="modal-borrar-hint"></p>
+        <div class="modal-borrar__acciones">
+            <button type="button" id="modal-borrar-cancelar" class="btn btn-outline-secondary btn-sm">Cancelar</button>
+            <form id="modal-borrar-form" method="POST" style="display:inline;">
+                <input type="hidden" name="id" id="modal-borrar-id">
+                <input type="hidden" name="nombre_confirmacion" id="modal-borrar-nombre-confirmacion">
+                <button type="submit" id="modal-borrar-confirmar"
+                        class="btn btn-sm btn-outline-danger" disabled>Borrar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="js/notas.js?v=<?= time() ?>"></script>
 </body>
-</html>
+</html>

@@ -10,13 +10,14 @@ class Asignatura
         return $stmt->fetchAll();
     }
 
-    public static function crear(string $nombre, int $cursoId = 1): void
+    public static function crear(string $nombre, int $cursoId = 1): int
     {
         $pdo = Gestor::getConexion();
         $stmt = $pdo->prepare("INSERT INTO asignaturas (curso_id, nombre) VALUES (:curso_id, :nombre)");
         $stmt->bindValue(':curso_id', $cursoId, PDO::PARAM_INT);
         $stmt->bindValue(':nombre', $nombre, PDO::PARAM_STR);
         $stmt->execute();
+        return (int) $pdo->lastInsertId();
     }
 
     public static function obtenerUna(int $id)
